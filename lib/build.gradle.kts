@@ -32,16 +32,22 @@ android {
     defaultConfig {
         minSdkVersion(Versions.Sdk.min)
         targetSdkVersion(Versions.Sdk.target)
+
+        testInstrumentationRunner = Dependencies.AndroidX.testRunner
     }
 
     sourceSets {
         getByName("main").java.srcDirs("src/main/kotlin")
+        getByName("androidTest").java.srcDirs("src/androidTest/kotlin")
     }
 
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
             isShrinkResources = false
+        }
+        getByName("debug") {
+            isTestCoverageEnabled = true
         }
     }
 
@@ -53,4 +59,11 @@ android {
 dependencies {
     implementation(Dependencies.Kotlin.stdlib)
     implementation(Dependencies.Kotlin.coroutinesAndroid)
+
+    implementation(Dependencies.AndroidX.annotation)
+
+    androidTestImplementation(Dependencies.Kotlin.test)
+    androidTestImplementation(Dependencies.Kotlin.coroutinesTest)
+    androidTestImplementation(Dependencies.AndroidX.junit)
+    androidTestImplementation(Dependencies.AndroidX.testRules)
 }
