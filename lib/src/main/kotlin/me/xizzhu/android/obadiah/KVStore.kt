@@ -17,7 +17,29 @@
 package me.xizzhu.android.obadiah
 
 interface KVStore {
+    interface Editor {
+        suspend fun apply()
+
+        fun clear(): Editor
+
+        fun putBoolean(key: String, value: Boolean): Editor
+
+        fun putDouble(key: String, value: Double): Editor
+
+        fun putFloat(key: String, value: Float): Editor
+
+        fun putInt(key: String, value: Int): Editor
+
+        fun putLong(key: String, value: Long): Editor
+
+        fun putString(key: String, value: String): Editor
+
+        fun remove(key: String): Editor
+    }
+
     suspend fun contains(key: String): Boolean
+
+    fun edit(): Editor
 
     suspend fun getBoolean(key: String, defaultValue: Boolean): Boolean
 

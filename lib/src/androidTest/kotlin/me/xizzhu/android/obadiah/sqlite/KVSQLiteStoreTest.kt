@@ -56,17 +56,86 @@ class KVSQLiteStoreTest : BaseSqliteTest() {
     @Test
     fun testSaveThenRead() {
         runBlocking {
-            val key = "my key"
-            val value = "1234"
-            databaseHelper.tableHelper.save(mapOf(Pair(key, value)))
+            sqliteStore.edit()
+                    .putBoolean("boolean", true)
+                    .putDouble("double", 1.23456789)
+                    .putFloat("float", 1.234F)
+                    .putInt("int", 12345)
+                    .putLong("long", 1234567890L)
+                    .putString("string", "0123456789")
+                    .apply()
 
-            assertTrue(sqliteStore.contains(key))
-            assertEquals(value.toDouble(), sqliteStore.getDouble(key, 0.0))
-            assertEquals(value.toBoolean(), sqliteStore.getBoolean(key, false))
-            assertEquals(value.toFloat(), sqliteStore.getFloat(key, 0.0F))
-            assertEquals(value.toInt(), sqliteStore.getInt(key, 0))
-            assertEquals(value.toLong(), sqliteStore.getLong(key, 0L))
-            assertEquals(value, sqliteStore.getString(key, ""))
+            assertTrue(sqliteStore.contains("boolean"))
+            assertEquals(true, sqliteStore.getBoolean("boolean", false))
+
+            assertTrue(sqliteStore.contains("double"))
+            assertEquals(1.23456789, sqliteStore.getDouble("double", 0.0))
+
+            assertTrue(sqliteStore.contains("float"))
+            assertEquals(1.234F, sqliteStore.getFloat("float", 0.0F))
+
+            assertTrue(sqliteStore.contains("int"))
+            assertEquals(12345, sqliteStore.getInt("int", 0))
+
+            assertTrue(sqliteStore.contains("long"))
+            assertEquals(1234567890L, sqliteStore.getLong("long", 0L))
+
+            assertTrue(sqliteStore.contains("string"))
+            assertEquals("0123456789", sqliteStore.getString("string", ""))
+        }
+    }
+
+    @Test
+    fun testSaveThenRemove() {
+        runBlocking {
+            sqliteStore.edit().putBoolean("boolean", true).putDouble("double", 1.23456789).apply()
+
+            assertTrue(sqliteStore.contains("boolean"))
+            assertEquals(true, sqliteStore.getBoolean("boolean", false))
+
+            assertTrue(sqliteStore.contains("double"))
+            assertEquals(1.23456789, sqliteStore.getDouble("double", 0.0))
+
+            sqliteStore.edit().remove("boolean").apply()
+            assertFalse(sqliteStore.contains("boolean"))
+            assertTrue(sqliteStore.contains("double"))
+            assertEquals(1.23456789, sqliteStore.getDouble("double", 0.0))
+        }
+    }
+
+    @Test
+    fun testSaveThenClear() {
+        runBlocking {
+            sqliteStore.edit().putBoolean("boolean", true).putDouble("double", 1.23456789).apply()
+
+            assertTrue(sqliteStore.contains("boolean"))
+            assertEquals(true, sqliteStore.getBoolean("boolean", false))
+
+            assertTrue(sqliteStore.contains("double"))
+            assertEquals(1.23456789, sqliteStore.getDouble("double", 0.0))
+
+            sqliteStore.edit().clear().apply()
+            assertFalse(sqliteStore.contains("boolean"))
+            assertFalse(sqliteStore.contains("double"))
+        }
+    }
+
+    @Test
+    fun testSaveThenClearAndSave() {
+        runBlocking {
+            sqliteStore.edit().putBoolean("boolean", true).putDouble("double", 1.23456789).apply()
+
+            assertTrue(sqliteStore.contains("boolean"))
+            assertEquals(true, sqliteStore.getBoolean("boolean", false))
+
+            assertTrue(sqliteStore.contains("double"))
+            assertEquals(1.23456789, sqliteStore.getDouble("double", 0.0))
+
+            sqliteStore.edit().clear().putInt("int", 12345).apply()
+            assertFalse(sqliteStore.contains("boolean"))
+            assertFalse(sqliteStore.contains("double"))
+            assertTrue(sqliteStore.contains("int"))
+            assertEquals(12345, sqliteStore.getInt("int", 0))
         }
     }
 }
