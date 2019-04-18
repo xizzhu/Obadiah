@@ -60,12 +60,26 @@ class TableHelper(private val sqliteHelper: SQLiteOpenHelper) {
     }
 
     @WorkerThread
-    fun save(key: String, value: String) {
-        val values = ContentValues(2).apply {
-            put(COLUMN_KEY, key)
-            put(COLUMN_VALUE, value)
+    fun save(keyValues: Map<String, String>) {
+        if (keyValues.isEmpty()) {
+            return
         }
-        db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+
+        db.beginTransaction()
+        try {
+            val values = ContentValues(2)
+            for ((k, v) in keyValues) {
+                with(values) {
+                    put(COLUMN_KEY, k)
+                    put(COLUMN_VALUE, v)
+                }
+                db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+            }
+
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+        }
     }
 
     @WorkerThread

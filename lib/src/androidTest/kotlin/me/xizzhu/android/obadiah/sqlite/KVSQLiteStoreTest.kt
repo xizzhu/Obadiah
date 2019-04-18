@@ -58,7 +58,7 @@ class KVSQLiteStoreTest : BaseSqliteTest() {
         runBlocking {
             val key = "my key"
             val value = "1234"
-            databaseHelper.tableHelper.save(key, value)
+            databaseHelper.tableHelper.save(mapOf(Pair(key, value)))
 
             assertTrue(sqliteStore.contains(key))
             assertEquals(value.toDouble(), sqliteStore.getDouble(key, 0.0))
