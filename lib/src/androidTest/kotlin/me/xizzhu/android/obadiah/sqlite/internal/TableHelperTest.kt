@@ -44,4 +44,37 @@ class TableHelperTest : BaseSqliteTest() {
         assertTrue(databaseHelper.tableHelper.has(key))
         assertEquals(value, databaseHelper.tableHelper.read(key, ""))
     }
+
+    @Test
+    fun testRemoveWithEmptyKeys() {
+        databaseHelper.tableHelper.save("key1", "value1")
+        databaseHelper.tableHelper.save("key2", "value2")
+        databaseHelper.tableHelper.save("key3", "value3")
+        databaseHelper.tableHelper.remove(emptyList())
+        assertTrue(databaseHelper.tableHelper.has("key1"))
+        assertTrue(databaseHelper.tableHelper.has("key2"))
+        assertTrue(databaseHelper.tableHelper.has("key3"))
+    }
+
+    @Test
+    fun testRemoveByKeys() {
+        databaseHelper.tableHelper.save("key1", "value1")
+        databaseHelper.tableHelper.save("key2", "value2")
+        databaseHelper.tableHelper.save("key3", "value3")
+        databaseHelper.tableHelper.remove(listOf("key1", "key3", "non-exist-key"))
+        assertFalse(databaseHelper.tableHelper.has("key1"))
+        assertTrue(databaseHelper.tableHelper.has("key2"))
+        assertFalse(databaseHelper.tableHelper.has("key3"))
+    }
+
+    @Test
+    fun testRemoveAll() {
+        databaseHelper.tableHelper.save("key1", "value1")
+        databaseHelper.tableHelper.save("key2", "value2")
+        databaseHelper.tableHelper.save("key3", "value3")
+        databaseHelper.tableHelper.removeAll()
+        assertFalse(databaseHelper.tableHelper.has("key1"))
+        assertFalse(databaseHelper.tableHelper.has("key2"))
+        assertFalse(databaseHelper.tableHelper.has("key3"))
+    }
 }

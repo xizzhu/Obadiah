@@ -67,4 +67,21 @@ class TableHelper(private val sqliteHelper: SQLiteOpenHelper) {
         }
         db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE)
     }
+
+    @WorkerThread
+    fun remove(keys: Collection<String>) {
+        if (keys.isEmpty()) {
+            return
+        }
+
+        val whereClause = StringBuilder("$COLUMN_KEY IN (")
+        repeat(keys.size) { whereClause.append("?,") }
+        whereClause.deleteCharAt(whereClause.length - 1).append(')')
+        db.delete(TABLE_NAME, whereClause.toString(), keys.toTypedArray())
+    }
+
+    @WorkerThread
+    fun removeAll() {
+        db.delete(TABLE_NAME, null, null)
+    }
 }
