@@ -41,27 +41,7 @@ class KVSQLiteStore : KVStore {
 
     override fun edit(): KVStore.Editor = EditorImpl(databaseHelper)
 
-    override suspend fun getDouble(key: String, defaultValue: Double): Double = withContext(Dispatchers.IO) {
-        databaseHelper.tableHelper.read(key, defaultValue.toString()).toDouble()
-    }
-
-    override suspend fun getBoolean(key: String, defaultValue: Boolean): Boolean = withContext(Dispatchers.IO) {
-        databaseHelper.tableHelper.read(key, defaultValue.toString()).toBoolean()
-    }
-
-    override suspend fun getFloat(key: String, defaultValue: Float): Float = withContext(Dispatchers.IO) {
-        databaseHelper.tableHelper.read(key, defaultValue.toString()).toFloat()
-    }
-
-    override suspend fun getInt(key: String, defaultValue: Int): Int = withContext(Dispatchers.IO) {
-        databaseHelper.tableHelper.read(key, defaultValue.toString()).toInt()
-    }
-
-    override suspend fun getLong(key: String, defaultValue: Long): Long = withContext(Dispatchers.IO) {
-        databaseHelper.tableHelper.read(key, defaultValue.toString()).toLong()
-    }
-
-    override suspend fun getString(key: String, defaultValue: String): String = withContext(Dispatchers.IO) {
+    override suspend fun get(key: String, defaultValue: String): String = withContext(Dispatchers.IO) {
         databaseHelper.tableHelper.read(key, defaultValue)
     }
 
@@ -76,7 +56,25 @@ class KVSQLiteStore : KVStore {
         private val removals: HashSet<String> = HashSet()
         private val updates: HashMap<String, String> = HashMap()
 
-        override suspend fun apply() {
+        override fun clear(): KVStore.Editor = apply {
+            synchronized(editorLok) {
+                clear = true
+            }
+        }
+
+        override fun put(key: String, value: String): KVStore.Editor = apply {
+            synchronized(editorLok) {
+                updates[key] = value
+            }
+        }
+
+        override fun remove(key: String): KVStore.Editor = apply {
+            synchronized(editorLok) {
+                removals.add(key)
+            }
+        }
+
+        override suspend fun commit() {
             withContext(Dispatchers.IO) {
                 synchronized(editorLok) {
                     val db = databaseHelper.writableDatabase
@@ -100,54 +98,6 @@ class KVSQLiteStore : KVStore {
                         }
                     }
                 }
-            }
-        }
-
-        override fun clear(): KVStore.Editor = apply {
-            synchronized(editorLok) {
-                clear = true
-            }
-        }
-
-        override fun putBoolean(key: String, value: Boolean): KVStore.Editor = apply {
-            synchronized(editorLok) {
-                updates[key] = value.toString()
-            }
-        }
-
-        override fun putDouble(key: String, value: Double): KVStore.Editor = apply {
-            synchronized(editorLok) {
-                updates[key] = value.toString()
-            }
-        }
-
-        override fun putFloat(key: String, value: Float): KVStore.Editor = apply {
-            synchronized(editorLok) {
-                updates[key] = value.toString()
-            }
-        }
-
-        override fun putInt(key: String, value: Int): KVStore.Editor = apply {
-            synchronized(editorLok) {
-                updates[key] = value.toString()
-            }
-        }
-
-        override fun putLong(key: String, value: Long): KVStore.Editor = apply {
-            synchronized(editorLok) {
-                updates[key] = value.toString()
-            }
-        }
-
-        override fun putString(key: String, value: String): KVStore.Editor = apply {
-            synchronized(editorLok) {
-                updates[key] = value
-            }
-        }
-
-        override fun remove(key: String): KVStore.Editor = apply {
-            synchronized(editorLok) {
-                removals.add(key)
             }
         }
     }
