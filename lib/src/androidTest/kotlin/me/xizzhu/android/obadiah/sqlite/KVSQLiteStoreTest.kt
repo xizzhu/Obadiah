@@ -16,9 +16,13 @@
 
 package me.xizzhu.android.obadiah.sqlite
 
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.runBlocking
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.test.assertEquals
@@ -27,17 +31,24 @@ import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 @SmallTest
-class KVSQLiteStoreTest : BaseSqliteTest() {
+class KVSQLiteStoreTest {
+    private val databaseName = "testDatabase"
     private lateinit var sqliteStore: KVSQLiteStore
 
-    override fun setup() {
-        super.setup()
-        sqliteStore = KVSQLiteStore(databaseHelper)
+    @Before
+    fun setup() {
+        clearLocalStorage()
+        sqliteStore = KVSQLiteStore(ApplicationProvider.getApplicationContext<Context>(), databaseName)
     }
 
-    override fun tearDown() {
+    private fun clearLocalStorage() {
+        ApplicationProvider.getApplicationContext<Context>().deleteDatabase(databaseName)
+    }
+
+    @After
+    fun tearDown() {
         runBlocking { sqliteStore.close() }
-        super.tearDown()
+        clearLocalStorage()
     }
 
     @Test

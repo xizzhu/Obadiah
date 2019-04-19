@@ -17,23 +17,13 @@
 package me.xizzhu.android.obadiah.sqlite
 
 import android.content.Context
-import androidx.annotation.RestrictTo
-import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.xizzhu.android.obadiah.KVStore
 import me.xizzhu.android.obadiah.sqlite.internal.DatabaseHelper
 
-class KVSQLiteStore : KVStore {
-    private val databaseHelper: DatabaseHelper
-
-    constructor(context: Context, name: String) : this(DatabaseHelper(context, name))
-
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
-    @VisibleForTesting
-    constructor(databaseHelper: DatabaseHelper) {
-        this.databaseHelper = databaseHelper
-    }
+class KVSQLiteStore(context: Context, name: String) : KVStore {
+    private val databaseHelper: DatabaseHelper = DatabaseHelper(context, name)
 
     override suspend fun contains(key: String): Boolean = withContext(Dispatchers.IO) {
         databaseHelper.tableHelper.has(key)

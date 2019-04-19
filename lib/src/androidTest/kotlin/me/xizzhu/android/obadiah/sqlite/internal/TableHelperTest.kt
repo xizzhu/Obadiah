@@ -16,9 +16,12 @@
 
 package me.xizzhu.android.obadiah.sqlite.internal
 
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
-import me.xizzhu.android.obadiah.sqlite.BaseSqliteTest
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.test.assertEquals
@@ -27,7 +30,26 @@ import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 @SmallTest
-class TableHelperTest : BaseSqliteTest() {
+class TableHelperTest {
+    private val databaseName = "testDatabase"
+    private lateinit var databaseHelper: DatabaseHelper
+
+    @Before
+    fun setup() {
+        clearLocalStorage()
+        databaseHelper = DatabaseHelper(ApplicationProvider.getApplicationContext<Context>(), databaseName)
+    }
+
+    private fun clearLocalStorage() {
+        ApplicationProvider.getApplicationContext<Context>().deleteDatabase(databaseName)
+    }
+
+    @After
+    fun tearDown() {
+        databaseHelper.close()
+        clearLocalStorage()
+    }
+
     @Test
     fun testEmptyTable() {
         assertFalse(databaseHelper.tableHelper.has("random-key"))
