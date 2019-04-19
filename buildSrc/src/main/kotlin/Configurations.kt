@@ -26,6 +26,10 @@ object Versions {
         const val name = "0.1.0"
     }
 
+    object AndroidMaven {
+        const val classpath = "2.1"
+    }
+
     object Coveralls {
         const val classpath = "2.8.2"
     }
@@ -57,6 +61,10 @@ object Versions {
 object Dependencies {
     object Sdk {
         const val classpath = "com.android.tools.build:gradle:${Versions.Sdk.classpath}"
+    }
+
+    object AndroidMaven {
+        const val classpath = "com.github.dcendents:android-maven-gradle-plugin:${Versions.AndroidMaven.classpath}"
     }
 
     object Coveralls {
