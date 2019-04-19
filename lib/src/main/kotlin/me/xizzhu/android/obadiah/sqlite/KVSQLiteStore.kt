@@ -28,7 +28,7 @@ class KVSQLiteStore(context: Context, name: String, private val dispatcher: Coro
 
     override fun edit(): KVStore.Editor = EditorImpl(databaseHelper, dispatcher)
 
-    override suspend fun contains(key: String): Boolean = withContext(dispatcher) {
+    override suspend fun has(key: String): Boolean = withContext(dispatcher) {
         databaseHelper.tableHelper.has(key)
     }
 

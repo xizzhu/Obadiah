@@ -54,7 +54,7 @@ class KVSQLiteStoreTest {
     @Test
     fun testEmptyTable() {
         runBlocking {
-            assertFalse(sqliteStore.contains("random-key"))
+            assertFalse(sqliteStore.has("random-key"))
             assertEquals("random value", sqliteStore.get("random-key", "random value"))
         }
     }
@@ -63,7 +63,7 @@ class KVSQLiteStoreTest {
     fun testSaveThenRead() {
         runBlocking {
             sqliteStore.edit().put("key", "value").commit()
-            assertTrue(sqliteStore.contains("key"))
+            assertTrue(sqliteStore.has("key"))
             assertEquals("value", sqliteStore.get("key", ""))
         }
     }
@@ -72,12 +72,12 @@ class KVSQLiteStoreTest {
     fun testSaveThenRemove() {
         runBlocking {
             sqliteStore.edit().put("key1", "value1").put("key2", "value2").commit()
-            assertTrue(sqliteStore.contains("key1"))
-            assertTrue(sqliteStore.contains("key2"))
+            assertTrue(sqliteStore.has("key1"))
+            assertTrue(sqliteStore.has("key2"))
 
             sqliteStore.edit().remove("key1").commit()
-            assertFalse(sqliteStore.contains("key1"))
-            assertTrue(sqliteStore.contains("key2"))
+            assertFalse(sqliteStore.has("key1"))
+            assertTrue(sqliteStore.has("key2"))
             assertEquals("value2", sqliteStore.get("key2", ""))
         }
     }
@@ -86,12 +86,12 @@ class KVSQLiteStoreTest {
     fun testSaveThenClear() {
         runBlocking {
             sqliteStore.edit().put("key1", "value1").put("key2", "value2").commit()
-            assertTrue(sqliteStore.contains("key1"))
-            assertTrue(sqliteStore.contains("key2"))
+            assertTrue(sqliteStore.has("key1"))
+            assertTrue(sqliteStore.has("key2"))
 
             sqliteStore.edit().clear().commit()
-            assertFalse(sqliteStore.contains("key1"))
-            assertFalse(sqliteStore.contains("key2"))
+            assertFalse(sqliteStore.has("key1"))
+            assertFalse(sqliteStore.has("key2"))
         }
     }
 
@@ -99,13 +99,13 @@ class KVSQLiteStoreTest {
     fun testSaveThenClearAndSave() {
         runBlocking {
             sqliteStore.edit().put("key1", "value1").put("key2", "value2").commit()
-            assertTrue(sqliteStore.contains("key1"))
-            assertTrue(sqliteStore.contains("key2"))
+            assertTrue(sqliteStore.has("key1"))
+            assertTrue(sqliteStore.has("key2"))
 
             sqliteStore.edit().clear().put("key3", "value3").commit()
-            assertFalse(sqliteStore.contains("key1"))
-            assertFalse(sqliteStore.contains("key2"))
-            assertTrue(sqliteStore.contains("key3"))
+            assertFalse(sqliteStore.has("key1"))
+            assertFalse(sqliteStore.has("key2"))
+            assertTrue(sqliteStore.has("key3"))
             assertEquals("value3", sqliteStore.get("key3", ""))
         }
     }

@@ -29,7 +29,7 @@ interface KVStore {
 
     fun edit(): Editor
 
-    suspend fun contains(key: String): Boolean
+    suspend fun has(key: String): Boolean
 
     suspend fun get(key: String, defaultValue: String): String
 
