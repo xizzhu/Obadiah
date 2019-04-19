@@ -8,6 +8,46 @@ Obadiah
 
 Yet another simple key-value store for Android.
 
+Download
+--------
+#### Gradle
+Add the following to your `build.gradle`:
+```gradle
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    implementation "com.github.xizzhu:Obadiah:0.1.0"
+}
+```
+
+Or your `build.gradle.kts`:
+```gradle
+repositories {
+    maven("https://jitpack.io")
+}
+
+dependencies {
+    implementation("com.github.xizzhu:Obadiah:0.1.0")
+}
+```
+
+#### Maven
+Add the following to your `pom.xml`:
+```xml
+<repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+</repository>
+
+<dependency>
+    <groupId>com.github.xizzhu</groupId>
+    <artifactId>Obadiah</artifactId>
+    <version>0.1.0</version>
+</dependency>
+```
+
 License
 -------
     Copyright (C) 2019 Xizhi Zhu
