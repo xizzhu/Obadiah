@@ -17,29 +17,30 @@
 package me.xizzhu.android.obadiah.sqlite
 
 import android.content.Context
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.xizzhu.android.obadiah.KVStore
 import me.xizzhu.android.obadiah.sqlite.internal.DatabaseHelper
 
-class KVSQLiteStore(context: Context, name: String) : KVStore {
+class KVSQLiteStore(context: Context, name: String, private val dispatcher: CoroutineDispatcher = Dispatchers.IO) : KVStore {
     private val databaseHelper: DatabaseHelper = DatabaseHelper(context, name)
 
-    override suspend fun contains(key: String): Boolean = withContext(Dispatchers.IO) {
+    override fun edit(): KVStore.Editor = EditorImpl(databaseHelper, dispatcher)
+
+    override suspend fun contains(key: String): Boolean = withContext(dispatcher) {
         databaseHelper.tableHelper.has(key)
     }
 
-    override fun edit(): KVStore.Editor = EditorImpl(databaseHelper)
-
-    override suspend fun get(key: String, defaultValue: String): String = withContext(Dispatchers.IO) {
+    override suspend fun get(key: String, defaultValue: String): String = withContext(dispatcher) {
         databaseHelper.tableHelper.read(key, defaultValue)
     }
 
     override suspend fun close() {
-        withContext(Dispatchers.IO) { databaseHelper.close() }
+        withContext(dispatcher) { databaseHelper.close() }
     }
 
-    private class EditorImpl(private val databaseHelper: DatabaseHelper) : KVStore.Editor {
+    private class EditorImpl(private val databaseHelper: DatabaseHelper, private val dispatcher: CoroutineDispatcher) : KVStore.Editor {
         private val editorLok: Any = Any()
 
         private var clear: Boolean = false
@@ -65,7 +66,7 @@ class KVSQLiteStore(context: Context, name: String) : KVStore {
         }
 
         override suspend fun commit() {
-            withContext(Dispatchers.IO) {
+            withContext(dispatcher) {
                 synchronized(editorLok) {
                     val db = databaseHelper.writableDatabase
                     try {

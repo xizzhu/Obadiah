@@ -27,9 +27,9 @@ interface KVStore {
         suspend fun commit()
     }
 
-    suspend fun contains(key: String): Boolean
-
     fun edit(): Editor
+
+    suspend fun contains(key: String): Boolean
 
     suspend fun get(key: String, defaultValue: String): String
 
