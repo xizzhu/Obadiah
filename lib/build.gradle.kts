@@ -47,7 +47,7 @@ android {
             isShrinkResources = false
         }
         getByName("debug") {
-            isTestCoverageEnabled = true
+            isTestCoverageEnabled = project.hasProperty("coverage")
         }
     }
 
