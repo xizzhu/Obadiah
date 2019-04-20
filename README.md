@@ -5,13 +5,15 @@ Obadiah
 [![Coverage Status](https://img.shields.io/coveralls/github/xizzhu/Obadiah.svg)](https://coveralls.io/github/xizzhu/Obadiah)
 [![API](https://img.shields.io/badge/API-21%2B-green.svg?style=flat)](https://developer.android.com/about/versions/android-5.0.html)
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
+[![JitPack](https://img.shields.io/jitpack/v/github/xizzhu/Obadiah.svg)](https://jitpack.io/#xizzhu/Obadiah)
 
 Yet another simple key-value store for Android.
 
+You can find the latest release notes at: [CHANGELOG.md](CHANGELOG.md)
+
 Download
 --------
-#### Gradle
-Add the following to your `build.gradle`:
+For *Gradle* users, add the following to your `build.gradle`:
 ```gradle
 repositories {
     maven { url "https://jitpack.io" }
@@ -22,7 +24,7 @@ dependencies {
 }
 ```
 
-Or your `build.gradle.kts`:
+Or to your `build.gradle.kts`:
 ```gradle
 repositories {
     maven("https://jitpack.io")
@@ -33,19 +35,43 @@ dependencies {
 }
 ```
 
-#### Maven
-Add the following to your `pom.xml`:
-```xml
-<repository>
-    <id>jitpack.io</id>
-    <url>https://jitpack.io</url>
-</repository>
+For *Maven* and others, see instructions [here](https://jitpack.io/#xizzhu/Obadiah).
 
-<dependency>
-    <groupId>com.github.xizzhu</groupId>
-    <artifactId>Obadiah</artifactId>
-    <version>0.1.0</version>
-</dependency>
+Usage
+-----
+* Open store:
+```kotlin
+val kvStore = KVStore.createInstance(this@MainActivity)
+
+// remember to close after usage
+launch {
+  kvStore.close()
+}
+
+// or use the use() extension function
+launch {
+  kvStore.use {
+    // the store will be automatically closed when this returns
+  }
+}
+```
+
+* Read values from store:
+```kotlin
+launch {
+  KVStore.createInstance(this@MainActivity).use {
+    Log.i(TAG, "'key' = " + it.get("key", "defaultValue"))
+  }
+}
+```
+
+* Write values to store:
+```kotlin
+launch {
+  KVStore.createInstance(this@MainActivity).use {
+    it.edit().put("key1", "value1").put("key2", "value2").commit()
+  }
+}
 ```
 
 License
