@@ -46,3 +46,11 @@ interface KVStore {
 
     suspend fun close()
 }
+
+suspend inline fun <R> KVStore.use(block: (KVStore) -> R): R {
+    try {
+        return block(this)
+    } finally {
+        close()
+    }
+}

@@ -26,6 +26,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import me.xizzhu.android.obadiah.KVStore
 import me.xizzhu.android.obadiah.sqlite.KVSQLiteStore
+import me.xizzhu.android.obadiah.use
 import kotlin.coroutines.CoroutineContext
 
 class MainActivity : Activity(), CoroutineScope {
@@ -51,21 +52,21 @@ class MainActivity : Activity(), CoroutineScope {
 
     private fun writeToStore() {
         launch {
-            KVStore.createInstance(this@MainActivity, storeName).edit()
-                    .put("key1", "value1")
-                    .put("key2", "value2")
-                    .commit()
+            KVStore.createInstance(this@MainActivity, storeName).use {
+                it.edit().put("key1", "value1").put("key2", "value2").commit()
+            }
             Log.i(TAG, "Written to store")
         }
     }
 
     private fun readFromStore() {
         launch {
-            val store: KVStore = KVStore.createInstance(this@MainActivity, storeName)
-            Log.i(TAG, "Reading from store...")
-            Log.i(TAG, "'key1' = " + store.get("key1", ""))
-            Log.i(TAG, "'key2' = " + store.get("key2", ""))
-            Log.i(TAG, "'non-exist' = " + store.get("non-exist", "random default value"))
+            KVStore.createInstance(this@MainActivity, storeName).use {
+                Log.i(TAG, "Reading from store...")
+                Log.i(TAG, "'key1' = " + it.get("key1", ""))
+                Log.i(TAG, "'key2' = " + it.get("key2", ""))
+                Log.i(TAG, "'non-exist' = " + it.get("non-exist", "random default value"))
+            }
         }
     }
 

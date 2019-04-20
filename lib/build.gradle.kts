@@ -67,4 +67,5 @@ dependencies {
     androidTestImplementation(Dependencies.Kotlin.coroutinesTest)
     androidTestImplementation(Dependencies.AndroidX.junit)
     androidTestImplementation(Dependencies.AndroidX.testRules)
+    androidTestImplementation(Dependencies.Dexmaker.dexmaker)
 }

@@ -56,6 +56,8 @@ object Versions {
         const val junit = "1.1.0"
         const val testRules = "1.1.1"
     }
+
+    const val dexmaker = "2.25.0"
 }
 
 object Dependencies {
@@ -86,5 +88,9 @@ object Dependencies {
         const val junit = "androidx.test.ext:junit:${Versions.AndroidX.junit}"
         const val testRules = "androidx.test:rules:${Versions.AndroidX.testRules}"
         const val testRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    object Dexmaker {
+        const val dexmaker = "com.linkedin.dexmaker:dexmaker-mockito-inline-extended:${Versions.dexmaker}"
     }
 }
