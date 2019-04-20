@@ -51,7 +51,7 @@ class MainActivity : Activity(), CoroutineScope {
 
     private fun writeToStore() {
         launch {
-            KVSQLiteStore(this@MainActivity, storeName).edit()
+            KVStore.createInstance(this@MainActivity, storeName).edit()
                     .put("key1", "value1")
                     .put("key2", "value2")
                     .commit()
@@ -61,7 +61,7 @@ class MainActivity : Activity(), CoroutineScope {
 
     private fun readFromStore() {
         launch {
-            val store: KVStore = KVSQLiteStore(this@MainActivity, storeName)
+            val store: KVStore = KVStore.createInstance(this@MainActivity, storeName)
             Log.i(TAG, "Reading from store...")
             Log.i(TAG, "'key1' = " + store.get("key1", ""))
             Log.i(TAG, "'key2' = " + store.get("key2", ""))

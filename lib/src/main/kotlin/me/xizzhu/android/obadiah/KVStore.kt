@@ -16,7 +16,18 @@
 
 package me.xizzhu.android.obadiah
 
+import android.content.Context
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import me.xizzhu.android.obadiah.sqlite.KVSQLiteStore
+
 interface KVStore {
+    companion object {
+        fun createInstance(context: Context, name: String,
+                           dispatcher: CoroutineDispatcher = Dispatchers.IO): KVStore =
+                KVSQLiteStore(context, name, dispatcher)
+    }
+
     interface Editor {
         fun clear(): Editor
 

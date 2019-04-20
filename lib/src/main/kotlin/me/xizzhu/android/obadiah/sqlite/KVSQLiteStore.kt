@@ -17,13 +17,14 @@
 package me.xizzhu.android.obadiah.sqlite
 
 import android.content.Context
+import androidx.annotation.RestrictTo
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.xizzhu.android.obadiah.KVStore
 import me.xizzhu.android.obadiah.sqlite.internal.DatabaseHelper
 
-class KVSQLiteStore(context: Context, name: String, private val dispatcher: CoroutineDispatcher = Dispatchers.IO) : KVStore {
+@RestrictTo(RestrictTo.Scope.LIBRARY)
+class KVSQLiteStore(context: Context, name: String, private val dispatcher: CoroutineDispatcher) : KVStore {
     private val databaseHelper: DatabaseHelper = DatabaseHelper(context, name)
 
     override fun edit(): KVStore.Editor = EditorImpl(databaseHelper, dispatcher)

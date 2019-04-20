@@ -20,6 +20,7 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -38,7 +39,7 @@ class KVSQLiteStoreTest {
     @Before
     fun setup() {
         clearLocalStorage()
-        sqliteStore = KVSQLiteStore(ApplicationProvider.getApplicationContext<Context>(), databaseName)
+        sqliteStore = KVSQLiteStore(ApplicationProvider.getApplicationContext<Context>(), databaseName, Dispatchers.IO)
     }
 
     private fun clearLocalStorage() {
