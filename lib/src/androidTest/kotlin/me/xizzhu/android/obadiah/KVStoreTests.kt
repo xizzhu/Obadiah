@@ -31,7 +31,7 @@ class KVStoreTests {
     @Test
     fun testUse() {
         runBlocking {
-            val kvStore = spy(KVStore.createInstance(ApplicationProvider.getApplicationContext<Context>(), "name"))
+            val kvStore = spy(KVStore.createInstance(ApplicationProvider.getApplicationContext<Context>()))
             kvStore.use {
                 it.has("random")
             }

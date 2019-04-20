@@ -38,8 +38,6 @@ class MainActivity : Activity(), CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
 
-    private val storeName = "storeName"
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -52,7 +50,7 @@ class MainActivity : Activity(), CoroutineScope {
 
     private fun writeToStore() {
         launch {
-            KVStore.createInstance(this@MainActivity, storeName).use {
+            KVStore.createInstance(this@MainActivity).use {
                 it.edit().put("key1", "value1").put("key2", "value2").commit()
             }
             Log.i(TAG, "Written to store")
@@ -61,7 +59,7 @@ class MainActivity : Activity(), CoroutineScope {
 
     private fun readFromStore() {
         launch {
-            KVStore.createInstance(this@MainActivity, storeName).use {
+            KVStore.createInstance(this@MainActivity).use {
                 Log.i(TAG, "Reading from store...")
                 Log.i(TAG, "'key1' = " + it.get("key1", ""))
                 Log.i(TAG, "'key2' = " + it.get("key2", ""))

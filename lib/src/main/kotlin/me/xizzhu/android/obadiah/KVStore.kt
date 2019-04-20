@@ -23,7 +23,7 @@ import me.xizzhu.android.obadiah.sqlite.KVSQLiteStore
 
 interface KVStore {
     companion object {
-        fun createInstance(context: Context, name: String,
+        fun createInstance(context: Context, name: String = "me.xizzhu.android.obadiah",
                            dispatcher: CoroutineDispatcher = Dispatchers.IO): KVStore =
                 KVSQLiteStore(context, name, dispatcher)
     }
