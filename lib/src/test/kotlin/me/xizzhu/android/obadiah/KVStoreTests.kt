@@ -16,25 +16,16 @@
 
 package me.xizzhu.android.obadiah
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.SmallTest
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.Mockito.*
 
-@RunWith(AndroidJUnit4::class)
-@SmallTest
 class KVStoreTests {
     @Test
     fun testUse() {
         runBlocking {
-            val kvStore = spy(KVStore.createInstance(ApplicationProvider.getApplicationContext<Context>()))
-            kvStore.use {
-                it.has("random")
-            }
+            val kvStore = mock(KVStore::class.java)
+            kvStore.use {}
             verify(kvStore, times(1)).close()
         }
     }

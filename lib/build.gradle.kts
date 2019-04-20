@@ -39,6 +39,7 @@ android {
 
     sourceSets {
         getByName("main").java.srcDirs("src/main/kotlin")
+        getByName("test").java.srcDirs("src/test/kotlin")
         getByName("androidTest").java.srcDirs("src/androidTest/kotlin")
     }
 
@@ -63,9 +64,14 @@ dependencies {
 
     implementation(Dependencies.AndroidX.annotation)
 
+    testImplementation(Dependencies.Kotlin.test)
+    testImplementation(Dependencies.Kotlin.coroutinesTest)
+    testImplementation(Dependencies.AndroidX.junit)
+    testImplementation(Dependencies.AndroidX.testRules)
+    testImplementation(Dependencies.Mockito.mockito)
+
     androidTestImplementation(Dependencies.Kotlin.test)
     androidTestImplementation(Dependencies.Kotlin.coroutinesTest)
     androidTestImplementation(Dependencies.AndroidX.junit)
     androidTestImplementation(Dependencies.AndroidX.testRules)
-    androidTestImplementation(Dependencies.Dexmaker.dexmaker)
 }
