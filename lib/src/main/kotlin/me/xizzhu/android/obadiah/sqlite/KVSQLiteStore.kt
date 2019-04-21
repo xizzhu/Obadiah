@@ -22,26 +22,32 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import me.xizzhu.android.obadiah.KVStore
 import me.xizzhu.android.obadiah.sqlite.internal.DatabaseHelper
+import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.concurrent.read
+import kotlin.concurrent.write
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class KVSQLiteStore(context: Context, name: String, private val dispatcher: CoroutineDispatcher) : KVStore {
+    private val readWriteLock: ReentrantReadWriteLock = ReentrantReadWriteLock()
     private val databaseHelper: DatabaseHelper = DatabaseHelper(context, name)
 
-    override fun edit(): KVStore.Editor = EditorImpl(databaseHelper, dispatcher)
+    override fun edit(): KVStore.Editor = EditorImpl(readWriteLock, databaseHelper, dispatcher)
 
     override suspend fun has(key: String): Boolean = withContext(dispatcher) {
-        databaseHelper.tableHelper.has(key)
+        readWriteLock.read { databaseHelper.tableHelper.has(key) }
     }
 
     override suspend fun get(key: String, defaultValue: String): String = withContext(dispatcher) {
-        databaseHelper.tableHelper.read(key, defaultValue)
+        readWriteLock.read { databaseHelper.tableHelper.read(key, defaultValue) }
     }
 
     override suspend fun close() {
         withContext(dispatcher) { databaseHelper.close() }
     }
 
-    private class EditorImpl(private val databaseHelper: DatabaseHelper, private val dispatcher: CoroutineDispatcher) : KVStore.Editor {
+    private class EditorImpl(private val readWriteLock: ReentrantReadWriteLock,
+                             private val databaseHelper: DatabaseHelper,
+                             private val dispatcher: CoroutineDispatcher) : KVStore.Editor {
         private val editorLok: Any = Any()
 
         private var clear: Boolean = false
@@ -69,24 +75,26 @@ class KVSQLiteStore(context: Context, name: String, private val dispatcher: Coro
         override suspend fun commit() {
             withContext(dispatcher) {
                 synchronized(editorLok) {
-                    val db = databaseHelper.writableDatabase
-                    try {
-                        db.beginTransaction()
+                    readWriteLock.write {
+                        val db = databaseHelper.writableDatabase
+                        try {
+                            db.beginTransaction()
 
-                        if (clear) {
-                            databaseHelper.tableHelper.removeAll()
-                        } else {
-                            databaseHelper.tableHelper.remove(removals)
-                        }
-                        databaseHelper.tableHelper.save(updates)
+                            if (clear) {
+                                databaseHelper.tableHelper.removeAll()
+                            } else {
+                                databaseHelper.tableHelper.remove(removals)
+                            }
+                            databaseHelper.tableHelper.save(updates)
 
-                        clear = false
-                        removals.clear()
-                        updates.clear()
-                        db.setTransactionSuccessful()
-                    } finally {
-                        if (db.inTransaction()) {
-                            db.endTransaction()
+                            clear = false
+                            removals.clear()
+                            updates.clear()
+                            db.setTransactionSuccessful()
+                        } finally {
+                            if (db.inTransaction()) {
+                                db.endTransaction()
+                            }
                         }
                     }
                 }
