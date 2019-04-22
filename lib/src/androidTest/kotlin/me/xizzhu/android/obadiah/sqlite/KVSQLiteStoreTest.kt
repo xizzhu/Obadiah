@@ -22,11 +22,13 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import me.xizzhu.android.obadiah.KVStore
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -108,6 +110,46 @@ class KVSQLiteStoreTest {
             assertFalse(sqliteStore.has("key2"))
             assertTrue(sqliteStore.has("key3"))
             assertEquals("value3", sqliteStore.get("key3", ""))
+        }
+    }
+
+    @Test
+    fun testListeners() {
+        runBlocking {
+            val updatedKeys = mutableSetOf<String>()
+            val listener = object : KVStore.OnChangeListener {
+                override fun onValueChanged(store: KVStore, key: String, newValue: String) {
+                    assertEquals(sqliteStore, store)
+
+                    assertFalse(updatedKeys.contains(key))
+                    updatedKeys.add(key)
+
+                    when (key) {
+                        "key1" -> assertEquals("value3", newValue)
+                        "key2" -> assertEquals("value2", newValue)
+                        else -> throw IllegalStateException("Unexpected key: $key")
+                    }
+                }
+            }
+            sqliteStore.addListener(listener)
+
+            sqliteStore.edit().put("key1", "value1").put("key2", "value2").put("key1", "value3").commit()
+        }
+    }
+
+    @Test
+    fun testAddThenRemoveListeners() {
+        runBlocking {
+            val listener = object : KVStore.OnChangeListener {
+                override fun onValueChanged(store: KVStore, key: String, newValue: String) {
+                    throw IllegalStateException("Should not be called")
+                }
+            }
+            sqliteStore.addListener(listener)
+            sqliteStore.addListener(listener)
+            sqliteStore.removeListener(listener)
+
+            sqliteStore.edit().put("key1", "value1").put("key2", "value2").commit()
         }
     }
 }

@@ -38,6 +38,14 @@ interface KVStore {
         suspend fun commit()
     }
 
+    interface OnChangeListener {
+        fun onValueChanged(store: KVStore, key: String, newValue: String)
+    }
+
+    fun addListener(listener: OnChangeListener): KVStore
+
+    fun removeListener(listener: OnChangeListener): KVStore
+
     fun edit(): Editor
 
     suspend fun has(key: String): Boolean
